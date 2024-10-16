@@ -13,7 +13,7 @@ template:
           {% if states('sensor.aquarea_electrical_combined_power') | float < 100 %}
             0
           {% else %}
-            {{ (states('sensor.sensor_water_meter_power_aquarea') | float * 1000 / states('sensor.aquarea_electrical_>
+            {{ (states('sensor.sensor_water_meter_power_aquarea') | float * 1000 / states('sensor.aquarea_electrical_combined_power') | float) | float | round(1) }}
           {% endif %}
 
 

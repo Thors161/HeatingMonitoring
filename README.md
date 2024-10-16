@@ -9,11 +9,14 @@ The scripts read out:
 - Wilo Yonos Pico circulation pump, that alternates the power and flow on a 7 segment display. Read using the RPi camera. For this also 3d model files are included. 
 
 Pump in home assistant:
-![Hass](./Wilo STL/wilo-home-assistant.png)
+
+![Wilo hass](./Wilo%20STL/wilo-home-assistant.png)
 
 Camera on pump:
-![Pump](./Wilo STL/wilo-yonos-pico.png)
+
+![Pump](./Wilo%20STL/wilo-yonos-pico.png)
 
 Heatpump monitor in home assistant:
-![Heatpump hass](./Home assistant/heatpump.png)
+
+![Heatpump hass](Home%20assistant/heatpump.png)
 

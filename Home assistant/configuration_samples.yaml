@@ -1,0 +1,209 @@
+template:
+  - sensor:
+      name: "Aquarea electrical combined power"
+      unit_of_measurement: "W"
+      state_class: "measurement"
+      state: >-
+          {{ (states('sensor.sensor_electricity_meter_power_aquarea') | float +
+          states('sensor.sensor_electricity_meter_power_aquarea_heater') | float) | round(1) }}
+  - sensor:
+      name: "Aquarea COP"
+      state_class: "measurement"
+      state: >-
+          {% if states('sensor.aquarea_electrical_combined_power') | float < 100 %}
+            0
+          {% else %}
+            {{ (states('sensor.sensor_water_meter_power_aquarea') | float * 1000 / states('sensor.aquarea_electrical_>
+          {% endif %}
+
+
+mqtt:
+  - sensor:
+      name: "Ecolution power"
+      object_id: "sensor.electricity_meter_power_ecolution"
+      state_topic: "/sdm120/electricity_ecolution"
+      unit_of_measurement: "W"
+      state_class: measurement
+      value_template: "{{ value_json.power}}"
+  - sensor:
+      name: "Ecolution energy"
+      object_id: "sensor.electricity_meter_energy_ecolution"
+      state_topic: "/sdm120/electricity_ecolution"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      value_template: "{{ value_json.energy | float * 0.001 }}"
+  - sensor:
+      name: "Ecolution voltage"
+      object_id: "sensor.electricity_meter_voltage_ecolution"
+      state_topic: "/sdm120/electricity_ecolution"
+      unit_of_measurement: "V"
+      value_template: "{{ value_json.voltage }}"
+  - sensor:
+      name: "Ecolution current"
+      object_id: "sensor.electricity_meter_current_ecolution"
+      state_topic: "/sdm120/electricity_ecolution"
+      unit_of_measurement: "A"
+      value_template: "{{ value_json.current }}"          
+  - sensor:
+      name: "Ecolution timestamp"
+      object_id: "sensor.electricity_meter_update_timestamp_ecolution"
+      state_topic: "/sdm120/electricity_ecolution"
+      value_template: "{{ value_json.update_timestamp }}"
+
+  - sensor:
+      name: "Aquarea power"
+      object_id: "sensor.electricity_meter_power_aquarea"
+      state_topic: "/sdm120/electricity_aquarea"
+      unit_of_measurement: "W"
+      state_class: measurement
+      value_template: "{{ value_json.power }}"
+  - sensor:
+      name: "Aquarea energy"
+      object_id: "sensor.electricity_meter_energy_aquarea"
+      state_topic: "/sdm120/electricity_aquarea"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      value_template: "{{ value_json.energy | float * 0.001 }}"
+  - sensor:
+      name: "Aquarea voltage"
+      object_id: "sensor.electricity_meter_voltage_aquarea"
+      state_topic: "/sdm120/electricity_aquarea"
+      unit_of_measurement: "V"
+      value_template: "{{ value_json.voltage }}"
+  - sensor:
+      name: "Aquarea current"
+      object_id: "sensor.electricity_meter_current_aquarea"
+      state_topic: "/sdm120/electricity_aquarea"
+      unit_of_measurement: "A"
+      value_template: "{{ value_json.current }}"
+  - sensor:
+      name: "Aquarea timestamp"
+      object_id: "sensor.electricity_meter_update_timestamp_aquarea"
+      state_topic: "/sdm120/electricity_aquarea"
+      value_template: "{{ value_json.update_timestamp }}"
+
+  - sensor:
+      name: "Aquarea heater power"
+      object_id: "sensor.electricity_meter_power_aquarea_heater"
+      state_topic: "/sdm120/electricity_aquarea_heater"
+      unit_of_measurement: "W"
+      state_class: measurement
+      value_template: "{{ value_json.power }}"
+  - sensor:
+      name: "Aquarea heater energy"
+      object_id: "sensor.electricity_meter_energy_aquarea_heater"
+      state_topic: "/sdm120/electricity_aquarea_heater"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      value_template: "{{ value_json.energy | float * 0.001 }}"
+  - sensor:
+      name: "Aquarea heater voltage"
+      object_id: "sensor.electricity_meter_voltage_aquarea_heater"
+      state_topic: "/sdm120/electricity_aquarea_heater"
+      unit_of_measurement: "V"
+      value_template: "{{ value_json.voltage }}"
+  - sensor:
+      name: "Aquarea heater current"
+      object_id: "sensor.electricity_meter_current_aquarea_heater"
+      state_topic: "/sdm120/electricity_aquarea_heater"
+      unit_of_measurement: "A"
+      value_template: "{{ value_json.current }}"   
+  - sensor:
+      name: "Aquarea heater timestamp"
+      object_id: "sensor.electricity_meter_update_timestamp_aquarea_heater"
+      state_topic: "/sdm120/electricity_aquarea_heater"
+      value_template: "{{ value_json.update_timestamp }}"
+
+  - sensor:
+      name: "Aquarea water volume"
+      object_id: "sensor.water_meter_volume_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      unit_of_measurement: "m3"
+      state_class: measurement
+      value_template: "{{ value_json.volume_m3 }}"
+  - sensor:
+      name: "Aquarea water flow"
+      object_id: "sensor.water_meter_flow_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      unit_of_measurement: "l/m"
+      state_class: measurement
+      value_template: "{{ value_json.flow_lpm }}"
+  - sensor:
+      name: "Aquarea water supply temperature"
+      object_id: "sensor.water_meter_supply_temp_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      unit_of_measurement: "C"
+      state_class: measurement
+      value_template: "{{ value_json.supply_temp_C }}"
+  - sensor:
+      name: "Aquarea water return temperature"
+      object_id: "sensor.water_meter_return_temp_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      unit_of_measurement: "C"
+      state_class: measurement
+      value_template: "{{ value_json.return_temp_C }}"
+  - sensor:
+      name: "Aquarea water power"
+      object_id: "sensor.water_meter_power_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      unit_of_measurement: "kW"
+      state_class: measurement
+      value_template: "{{ value_json.power_kW }}"
+  - sensor:
+      name: "Aquarea water energy"
+      object_id: "sensor.water_meter_energy_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      unit_of_measurement: "kWh"
+      device_class: energy
+      state_class: total
+      value_template: "{{ value_json.energy_kWh }}"
+  - sensor:
+      name: "Aquarea water update timestamp"
+      object_id: "sensor.water_meter_update_timestamp_aquarea"
+      state_topic: "/kamstrup/water_aquarea"
+      value_template: "{{ value_json.update_timestamp }}"
+
+  - sensor:
+      name: "Heating aquarea supply temp"
+      object_id: "sensor.water_temp_aquarea_supply"
+      state_topic: "/ds18b20/set1/28-xxxxxxxxxxxx"
+      unit_of_measurement: "°C"
+      state_class: measurement
+      value_template: "{{ value_json.temp }}"
+  - sensor:
+      name: "Heating aquarea return temp"
+      object_id: "sensor.water_temp_aquarea_return"
+      state_topic: "/ds18b20/set1/28-xxxxxxxxxxxx"
+      unit_of_measurement: "°C"
+      state_class: measurement
+      value_template: "{{ value_json.temp }}"
+
+  - sensor:
+      name: "Wilo power"
+      object_id: "sensor.electricity_meter_power_wilo"
+      state_topic: "/wilo/power"
+      unit_of_measurement: "W"
+      state_class: measurement
+      value_template: "{{ value_json.power_w }}"
+  - sensor:
+      name: "Wilo flow"
+      object_id: "sensor.water_flow_wilo"
+      state_topic: "/wilo/flow"
+      unit_of_measurement: "m3/h"
+      state_class: measurement
+      value_template: "{{ value_json.flow_m3_h }}"
+  - image:
+      name: "Wilo power image"
+      object_id: "imahe.wilo_power_image"
+      image_topic: /wilo/power_image 
+      content_type: image/jpg
+  - image:
+      name: "Wilo flow image"
+      object_id: "imahe.wilo_flow_image"
+      image_topic: /wilo/flow_image 
+      content_type: image/jpg
+
+

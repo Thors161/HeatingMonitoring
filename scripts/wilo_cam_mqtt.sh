@@ -15,6 +15,8 @@ power_read2=unknown
 max_tries=10
 tries=0
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 while [[ $tries -le $max_tries && ("$flow_read" == "false" || "$power_read" == "false") ]]; do
 
     echo "Reading: $tries"
@@ -22,10 +24,11 @@ while [[ $tries -le $max_tries && ("$flow_read" == "false" || "$power_read" == "
     rm /tmp/wilo_cap.jpg
     rm /tmp/wilo.jpg
     raspistill -o /tmp/wilo_cap.jpg -w 320 -h 240
-    convert /tmp/wilo_cap.jpg -crop 144x120+70+100 /tmp/wilo.jpg
+    convert /tmp/wilo_cap.jpg -crop 144x120+70+110 /tmp/wilo.jpg
 
     # Input string to check
-    input=`ssocr -D remove_isolated -d -1 -c decimal -a -t 20 --foreground=white --background=black --number-pixels=5 /tmp/wilo.jpg`
+    #input=`ssocr -D remove_isolated -d -1 -c decimal -a -t 25 --foreground=white --background=black --number-pixels=5 /tmp/wilo.jpg`
+    input=`python3 "$SCRIPT_DIR/wiloocr.py" /tmp/wilo.jpg`
     #removes spaces
     input=$(echo "$input" | sed 's/^[ \t]*//;s/[ \t]*$//')
     echo "Wilo: value: \"$input\""

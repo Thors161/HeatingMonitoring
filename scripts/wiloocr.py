@@ -23,8 +23,8 @@
 import cv2
 import sys
 
-roisd1 = [
-    [25,  7, 35, 20],  # a
+rois_digit1 = [
+    [25, 7, 35, 20],  # a
     [50, 20, 20, 35],  # b
     [50, 60, 20, 35],  # c
     [20, 92, 35, 20],  # d
@@ -33,8 +33,8 @@ roisd1 = [
     [22, 48, 35, 20],  # g
 ]
 
-roisd2 = [
-    [89,  7, 35, 20],  # a
+rois_digit2 = [
+    [89, 7, 35, 20],  # a
     [114, 20, 20, 35],  # b
     [114, 60, 20, 35],  # c
     [84, 92, 35, 20],  # d
@@ -43,24 +43,10 @@ roisd2 = [
     [86, 48, 35, 20],  # g
 ]
 
-roidot = [62, 96, 20, 20]
+roi_dot = [62, 96, 20, 20]
 
 segment_min_px_count = 100
 dot_min_px_count = 50
-
-def draw_rois(image, rois):
-    for roi in rois:
-        x, y, w, h = roi
-        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 1)
-
-def count_white_pixels_in_roi(thresholded_image, x, y, w, h):
-    # Extract the region of interest (ROI)
-    roi = thresholded_image[y:y+h, x:x+w]
-
-    # Count white pixels (value 255) in the ROI
-    count = cv2.countNonZero(roi)
-
-    return count
 
 #  --a--
 # |     |
@@ -71,66 +57,112 @@ def count_white_pixels_in_roi(thresholded_image, x, y, w, h):
 # e     c
 # |     |
 #  --d--
+segment_map = {
+    (1, 1, 1, 1, 1, 1, 0): 0,
+    (0, 1, 1, 0, 0, 0, 0): 1,
+    (1, 1, 0, 1, 1, 0, 1): 2,
+    (1, 1, 1, 1, 0, 0, 1): 3,
+    (0, 1, 1, 0, 0, 1, 1): 4,
+    (1, 0, 1, 1, 0, 1, 1): 5,
+    (1, 0, 1, 1, 1, 1, 1): 6,
+    (1, 1, 1, 0, 0, 0, 0): 7,
+    (1, 1, 1, 1, 1, 1, 1): 8,
+    (1, 1, 1, 1, 0, 1, 1): 9
+}
+
+overlay_color_roi_true = (0, 255, 0)
+overlay_color_roi_false = (0, 0, 255)
+overlay_alpha = 0.2
+
+
+def segment_list(digit):
+    for key, value in segment_map.items():
+        if value == digit:
+            return key
+
+    return [0, 0, 0, 0, 0, 0, 0]
+
+
+def draw_rois_digit(image, rois, digit):
+    overlay = image.copy()
+
+    for index, roi in enumerate(rois):
+        x, y, w, h = roi
+        key = segment_list(digit)
+        if key[index]:
+            cv2.rectangle(image, (x, y), (x + w, y + h), overlay_color_roi_true, 1)
+        else:
+            cv2.rectangle(image, (x, y), (x + w, y + h), overlay_color_roi_false, 1)
+
+    cv2.addWeighted(overlay, overlay_alpha, image, 1 - overlay_alpha, 0, image)
+
+
+def draw_roi_dot(image, roi, dot):
+    overlay = image.copy()
+
+    x, y, w, h = roi
+    if dot:
+        cv2.rectangle(image, (x, y), (x + w, y + h), overlay_color_roi_true, 1)
+    else:
+        cv2.rectangle(image, (x, y), (x + w, y + h), overlay_color_roi_false, 1)
+
+    cv2.addWeighted(overlay, overlay_alpha, image, 1 - overlay_alpha, 0, image)
+
+
+def count_white_pixels_in_roi(threshold_image, x, y, w, h):
+    roi = threshold_image[y:y + h, x:x + w]
+    count = cv2.countNonZero(roi)
+    return count
+
 
 def detect_7_segment(a, b, c, d, e, f, g):
-    # Define the segment-to-digit mappings
-    segment_map = {
-        (1, 1, 1, 1, 1, 1, 0): 0,
-        (0, 1, 1, 0, 0, 0, 0): 1,
-        (1, 1, 0, 1, 1, 0, 1): 2,
-        (1, 1, 1, 1, 0, 0, 1): 3,
-        (0, 1, 1, 0, 0, 1, 1): 4,
-        (1, 0, 1, 1, 0, 1, 1): 5,
-        (1, 0, 1, 1, 1, 1, 1): 6,
-        (1, 1, 1, 0, 0, 0, 0): 7,
-        (1, 1, 1, 1, 1, 1, 1): 8,
-        (1, 1, 1, 1, 0, 1, 1): 9
-    }
-
-    # Get the tuple of booleans
     segments = (a, b, c, d, e, f, g)
-
-    # Detect the digit based on the segments
     return segment_map.get(segments, "")
 
-def detect_digit(thresholded_image, rois, min_px_count):
+
+def detect_digit(threshold_image, rois, min_px_count):
     segments = []
     for roi in rois:
         x, y, w, h = roi
-        count = count_white_pixels_in_roi(thresholded_image, x, y, w, h)
+        count = count_white_pixels_in_roi(threshold_image, x, y, w, h)
         segments.append(count > min_px_count)
 
     a, b, c, d, e, f, g = segments
     return detect_7_segment(a, b, c, d, e, f, g)
 
-def detect_dot(thresholded_image, roi, min_px_count):
+
+def detect_dot(threshold_image, roi, min_px_count):
     x, y, w, h = roi
-    count = count_white_pixels_in_roi(thresholded_image, x, y, w, h)
+    count = count_white_pixels_in_roi(threshold_image, x, y, w, h)
     return count > min_px_count
 
-def detect_number(imagefile):
-    image = cv2.imread(imagefile)
+
+def detect_number(image_file, draw_regions):
+    image = cv2.imread(image_file)
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    ret, thresholded_image = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    ret, threshold_image = cv2.threshold(gray_image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-    digit1 = detect_digit(thresholded_image, roisd1, segment_min_px_count)
-    digit2 = detect_digit(thresholded_image, roisd2, segment_min_px_count)
-    dot = detect_dot(thresholded_image, roidot, dot_min_px_count)
+    digit1 = detect_digit(threshold_image, rois_digit1, segment_min_px_count)
+    digit2 = detect_digit(threshold_image, rois_digit2, segment_min_px_count)
+    dot = detect_dot(threshold_image, roi_dot, dot_min_px_count)
 
-    #image = cv2.cvtColor(thresholded_image, cv2.COLOR_GRAY2BGR)
+    if draw_regions:
+        draw_rois_digit(image, rois_digit1, digit1)
+        draw_roi_dot(image, roi_dot, dot)
+        draw_rois_digit(image, rois_digit2, digit2)
 
-    #draw_rois(image, roisd1)
-    #draw_rois(image, roisd2)
-    #draw_rois(image, [roidot])
+        cv2.imwrite(image_file, image)
 
-    #cv2.imshow('Image Window', image)
-    #cv2.waitKey(0)
+    # cv2.imshow('Image Window', image)
+    # cv2.waitKey(0)
+
+    cv2.imwrite(image_file, image)
 
     return f"{digit1}{'.' if dot else ''}{digit2}"
 
+
 if __name__ == "__main__":
+    draw_regions = True
     file = sys.argv[1]
-    print(detect_number(file))
-
-
+    print(detect_number(file, draw_regions))
 

@@ -5,7 +5,9 @@
 flow_read=false
 power_read=false
 
-# require two readings that are the same, when the display switches the result is a mix
+# Require two readings that are the same, when the display switches the result is a mix
+# Ideally two readings from the same display sequence are used as that guarantees the
+# display is not transitioning. However pythson startup is too slow for this now (~2.5 sec)
 flow_read1=unknown
 power_read1=unknown
 
@@ -23,7 +25,9 @@ while [[ $tries -le $max_tries && ("$flow_read" == "false" || "$power_read" == "
 
     rm /tmp/wilo_cap.jpg
     rm /tmp/wilo.jpg
-    raspistill -o /tmp/wilo_cap.jpg -w 320 -h 240
+    # Capture images fast (time) to make two reading on the same displayed value,
+    # as the image is small this works.
+    raspistill -t 100 -o /tmp/wilo_cap.jpg -w 320 -h 240
     convert /tmp/wilo_cap.jpg -crop 144x120+70+110 /tmp/wilo.jpg
 
     # Input string to check
@@ -32,7 +36,6 @@ while [[ $tries -le $max_tries && ("$flow_read" == "false" || "$power_read" == "
     #removes spaces
     input=$(echo "$input" | sed 's/^[ \t]*//;s/[ \t]*$//')
     echo "Wilo: value: \"$input\""
-
 
 
     # Check if the input is a numerical value with a decimal, and between 0.0 and 3.0
@@ -118,11 +121,11 @@ while [[ $tries -le $max_tries && ("$flow_read" == "false" || "$power_read" == "
 done
 
 if [ "$flow_read" = "false" ]; then
-    flow_read1 = 0
+    flow_read1=0
 fi
 
 if [ "$power_read" = "false" ]; then
-    power_read1 = 0
+    power_read1=0
 fi
 
 echo "Wilo: Publishing values: $flow_read1 $power_read1"

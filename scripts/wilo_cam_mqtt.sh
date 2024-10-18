@@ -7,7 +7,7 @@ power_read=false
 
 # Require two readings that are the same, when the display switches the result is a mix
 # Ideally two readings from the same display sequence are used as that guarantees the
-# display is not transitioning. However pythson startup is too slow for this now (~2.5 sec)
+# display is not transitioning. However python startup is too slow for this now (~2.5 sec)
 flow_read1=unknown
 power_read1=unknown
 

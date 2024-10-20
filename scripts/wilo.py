@@ -98,7 +98,7 @@ while tries < max_tries and (not flow_read or not power_read):
 
     command = [
         "raspistill",
-        "-t", "500",
+        "-t", "250",
         "-w", "320",
         "-h", "240",
         "-o", capture_file
@@ -207,7 +207,7 @@ command = [
     "-u", MQTT_USERNAME,
     "-P", MQTT_PASSWORD,
     "-t", "/wilo/flow",
-    "-m", f"{{\"flow_m3_h\":{flow_read1}}}\""
+    "-m", f"{{\"flow_m3_h\":{flow_read1}}}"
 ]
 result = subprocess.run(command)
 
@@ -227,7 +227,7 @@ command = [
     "-u", MQTT_USERNAME,
     "-P", MQTT_PASSWORD,
     "-t", "/wilo/power",
-    "-m", f"{{\"power_w\":{power_read1}}}\""
+    "-m", f"{{\"power_w\":{power_read1}}}"
 ]
 result = subprocess.run(command)
 

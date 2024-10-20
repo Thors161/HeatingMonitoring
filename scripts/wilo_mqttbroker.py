@@ -1,0 +1,4 @@
+MQTT_HOST = ""
+MQTT_USERNAME = ""
+MQTT_PASSWORD = ""
+

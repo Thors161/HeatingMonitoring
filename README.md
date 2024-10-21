@@ -10,11 +10,11 @@ The scripts read out:
 
 Pump in home assistant:
 
-![Wilo hass](./Wilo%20STL/wilo-home-assistant.png)
+![Wilo hass](./wilo%20yonos%20pico/wilo-home-assistant.png)
 
 Camera on pump:
 
-![Pump](./Wilo%20STL/wilo-yonos-pico.png)
+![Pump](./wilo%20yonos%20pico/wilo-yonos-pico.png)
 
 Heatpump monitor in home assistant:
 

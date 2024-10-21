@@ -70,8 +70,6 @@ power_file = "/tmp/wilo_power.jpg"
 draw_ssocr_regions = True
 
 # Require two readings that are the same, when the display switches the result is a mix
-# Ideally two readings from the same display sequence are used as that guarantees the
-# display is not transitioning. However python startup is too slow for this now (~2.5 sec)
 
 flow_read = False
 power_read = False

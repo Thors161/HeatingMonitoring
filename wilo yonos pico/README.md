@@ -12,6 +12,7 @@ Camera on pump:
 ![Pump](wilo-yonos-pico.png)
 
 Pump in home assistant:
+
 ![Wilo hass](wilo-home-assistant.png)
 ![Wilo hass segments](wilo-home-assistant-segments.png)
 

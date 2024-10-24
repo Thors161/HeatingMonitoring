@@ -70,8 +70,8 @@ power_file = "/tmp/wilo_power.jpg"
 draw_ssocr_regions = True
 
 # Require two readings that are the same, when the display switches the result is a mix
-# Ideally two readings from the same display sequence are used as that guarantees the
-# display is not transitioning. However python startup is too slow for this now (~2.5 sec)
+# Two readings from the same display sequence are used as that guarantees the
+# display is not transitioning.
 
 flow_read = False
 power_read = False
@@ -121,6 +121,11 @@ while tries < max_tries and (not flow_read or not power_read):
             if 0.0 <= value <= 3.0:
                 # valid flow value
 
+                # start over for power, we want two captures from the same displayed quantity
+                if not power_read:
+                    power_read1 = "unknown"
+                    power_read2 = "unknown"
+
                 if flow_read1 != "unknown" and flow_read2 != "unknown" and flow_read1 != flow_read2:
                     print(f"Wilo: Read two different flow values: {flow_read1} {flow_read2}")
 
@@ -151,6 +156,11 @@ while tries < max_tries and (not flow_read or not power_read):
             value = int(text)
             if 2 <= value <= 75:
                 # valid power value
+
+                # start over for flow, we want two captures from the same displayed quantity
+                if not flow_read:
+                    flow_read1 = "unknown"
+                    flow_read2 = "unknown"
 
                 if power_read1 != "unknown" and power_read2 != "unknown" and power_read1 != power_read2:
                     print(f"Wilo: Read two different power values: {power_read1} {power_read2}")

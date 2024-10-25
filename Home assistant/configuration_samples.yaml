@@ -15,6 +15,14 @@ template:
           {% else %}
             {{ (states('sensor.sensor_water_meter_power_aquarea') | float * 1000 / states('sensor.aquarea_electrical_combined_power') | float) | float | round(1) }}
           {% endif %}
+  - sensor:
+      name: "Radiator water power"
+      unit_of_measurement: "W"
+      state_class: "measurement"
+      state: >-
+        {{ (states('sensor.sensor_water_flow_wilo') | float * 0.28 * 4.2 * 1000 *
+           (states('sensor.sensor_water_temp_radiators_supply') | float -
+            states('sensor.sensor_water_temp_radiators_return') | float)) | round(0) }}
 
 
 mqtt:
